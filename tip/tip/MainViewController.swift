@@ -21,11 +21,28 @@ class MainViewController: UIViewController, UITextFieldDelegate {
         self.navBarHeight = self.navigationController?.navigationBar.frame.height
         self.navigationController!.navigationBar.translucent = false
         self.makeInputField()
+        self.hideKeyboardOnTapOutside()
+        self.registerForKeyboardNotifications()
     }
     
     // viewWillAppear gets called every time the view appears.
     override func viewWillAppear(animated: Bool) {
         self.inputField?.becomeFirstResponder()
+    }
+    
+    override func viewWillDisappear(animated: Bool) {
+        NSNotificationCenter.defaultCenter().removeObserver(self,
+            name: UIKeyboardDidShowNotification,
+            object: nil)
+        
+        NSNotificationCenter.defaultCenter().removeObserver(self,
+            name: UIKeyboardWillHideNotification,
+            object: nil)
+    }
+
+    // MARK: UI elements
+    func makeTipPercentageSegmentControl() {
+//        let tipControl = 
     }
     
     func makeInputField() {
@@ -77,6 +94,38 @@ class MainViewController: UIViewController, UITextFieldDelegate {
         textField.text = newString
         // Prevent changes. we would update the textfield manually
         return false
+    }
+    
+    // MARK: Keyboard related items
+    
+    func registerForKeyboardNotifications() {
+        NSNotificationCenter.defaultCenter().addObserver(
+            self,
+            selector: "keyboardWasShown:",
+            name: UIKeyboardDidShowNotification,
+            object: nil)
+        
+        NSNotificationCenter.defaultCenter().addObserver(
+            self,
+            selector: "keyboardWillBeHidden:",
+            name: UIKeyboardWillHideNotification,
+            object: nil)
+    }
+
+    
+    func keyboardWasShown(notification: NSNotification) {
+    }
+    
+    func keyboardWillBeHidden(notification: NSNotification) {
+    }
+    
+    func hideKeyboardOnTapOutside() {
+        let tapGesture = UITapGestureRecognizer(target: self, action: "dismissKeyboard")
+        self.view.addGestureRecognizer(tapGesture)
+    }
+    
+    func dismissKeyboard() {
+        self.inputField!.resignFirstResponder()
     }
     
     
