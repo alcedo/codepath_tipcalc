@@ -13,6 +13,7 @@ class MainViewController: UIViewController, UITextFieldDelegate {
     
     // list of UI elements
     var inputField: UITextField?
+    var tipAmountControl: UISegmentedControl?
     var navBarHeight: CGFloat?
 
     override func viewDidLoad() {
@@ -21,6 +22,7 @@ class MainViewController: UIViewController, UITextFieldDelegate {
         self.navBarHeight = self.navigationController?.navigationBar.frame.height
         self.navigationController!.navigationBar.translucent = false
         self.makeInputField()
+        self.makeTipPercentageSegmentControl()
         self.hideKeyboardOnTapOutside()
         self.registerForKeyboardNotifications()
     }
@@ -42,7 +44,15 @@ class MainViewController: UIViewController, UITextFieldDelegate {
 
     // MARK: UI elements
     func makeTipPercentageSegmentControl() {
-//        let tipControl = 
+        let tipControl = UISegmentedControl(items: ["10%", "20%", "30%"])
+        self.tipAmountControl = tipControl
+        self.view.addSubview(tipControl)
+        
+        tipControl.snp_makeConstraints { (make) -> Void in
+            make.top.equalTo(self.inputField!.snp_bottom)
+            make.centerX.equalTo(self.view.snp_centerX)
+            return
+        }
     }
     
     func makeInputField() {
@@ -59,6 +69,12 @@ class MainViewController: UIViewController, UITextFieldDelegate {
             inputField.snp_makeConstraints{ (make) -> Void in
                 make.width.greaterThanOrEqualTo(self.view.bounds.width)
                 make.height.equalTo(100)
+                
+                // anchor inputfield to something
+                make.top.equalTo(self.view.snp_top)
+                make.left.equalTo(self.view.snp_left)
+                make.right.equalTo(self.view.snp_right)
+                
                 return
             }
             
