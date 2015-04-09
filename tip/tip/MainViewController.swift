@@ -44,7 +44,7 @@ class MainViewController: UIViewController, UITextFieldDelegate {
 
     // MARK: UI elements
     func makeTipPercentageSegmentControl() {
-        let tipControl = UISegmentedControl(items: ["10%", "20%", "30%"])
+        let tipControl = UISegmentedControl(items: ["10%", "15%", "20%"])
         self.tipAmountControl = tipControl
         self.view.addSubview(tipControl)
         
