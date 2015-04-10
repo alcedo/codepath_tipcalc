@@ -96,7 +96,7 @@ class MainViewController: UIViewController, UITextFieldDelegate {
         self.view.addSubview(view)
         
         
-        view.backgroundColor = UIColor.brownColor()
+        view.backgroundColor = UIColor(red: 41/255, green: 128/255, blue: 185/255, alpha: 1.0)
         view.snp_makeConstraints { (make) -> Void in
             make.top.equalTo(self.tipAmountControl!.snp_bottom).offset(10)
             make.left.equalTo(self.view.snp_left)
