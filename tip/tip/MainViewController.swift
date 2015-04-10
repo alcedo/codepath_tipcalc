@@ -15,6 +15,8 @@ class MainViewController: UIViewController, UITextFieldDelegate {
     var inputField: UITextField?
     var tipAmountControl: UISegmentedControl?
     var navBarHeight: CGFloat?
+    
+    var tipAmount = 0.0
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -23,13 +25,17 @@ class MainViewController: UIViewController, UITextFieldDelegate {
         self.navigationController!.navigationBar.translucent = false
         self.makeInputField()
         self.makeTipPercentageSegmentControl()
+        self.makeResultsPane()
         self.hideKeyboardOnTapOutside()
         self.registerForKeyboardNotifications()
     }
     
     // viewWillAppear gets called every time the view appears.
     override func viewWillAppear(animated: Bool) {
+        // focus on the text field to make sure the keyboard shows
         self.inputField?.becomeFirstResponder()
+        
+        super.viewWillAppear(animated)
     }
     
     override func viewWillDisappear(animated: Bool) {
@@ -65,7 +71,7 @@ class MainViewController: UIViewController, UITextFieldDelegate {
             inputField.delegate = self
             inputField.keyboardType = UIKeyboardType.DecimalPad
             inputField.textAlignment = NSTextAlignment.Right
-            inputField.font = UIFont(name: "Arial", size: 30)
+            inputField.font = UIFont(name: "Arial", size: 45)
             inputField.snp_makeConstraints{ (make) -> Void in
                 make.width.greaterThanOrEqualTo(self.view.bounds.width)
                 make.height.equalTo(100)
@@ -81,6 +87,47 @@ class MainViewController: UIViewController, UITextFieldDelegate {
         }
     }
 
+    func makeResultsPane() {
+        let view = UIView()
+        let plusLabel = UILabel()
+        let plusAmountLabel = UILabel()
+        let equalsLabel = UILabel()
+        let resultsAmountLabel = UILabel()
+        self.view.addSubview(view)
+        
+        
+        view.backgroundColor = UIColor.brownColor()
+        view.snp_makeConstraints { (make) -> Void in
+            make.top.equalTo(self.tipAmountControl!.snp_bottom).offset(10)
+            make.left.equalTo(self.view.snp_left)
+            make.right.equalTo(self.view.snp_right)
+            make.width.greaterThanOrEqualTo(self.view.bounds.width)
+            make.bottom.equalTo(self.view.snp_bottom)
+            return
+        }
+        
+        
+        view.addSubview(plusLabel)
+        plusLabel.text = "+"
+        plusLabel.textColor = UIColor.whiteColor()
+        plusLabel.font = UIFont(name: "Arial", size: 40)
+        plusLabel.snp_makeConstraints { (make) -> Void in
+            make.top.equalTo(view.snp_top)
+            return
+        }
+        
+        
+        view.addSubview(plusAmountLabel)
+        plusAmountLabel.text = self.tipAmount.description
+        plusAmountLabel.font = UIFont(name: "Arial", size: 40)
+        plusAmountLabel.snp_makeConstraints { (make) -> Void in
+            make.top.equalTo(view.snp_top)
+            make.right.equalTo(self.view.snp_right)
+            return
+        }
+        
+    }
+    
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
