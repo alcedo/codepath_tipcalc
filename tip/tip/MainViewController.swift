@@ -15,6 +15,7 @@ class MainViewController: UIViewController, UITextFieldDelegate {
     var inputField: UITextField?
     var tipAmountControl: UISegmentedControl?
     var plusAmountLabel: UILabel?
+    var finalAmountLabel: UILabel?
     var navBarHeight: CGFloat?
     
     var inputAmount = 0.0
@@ -55,6 +56,8 @@ class MainViewController: UIViewController, UITextFieldDelegate {
     func updateValues() {
         self.tipAmount = Double(self.tipPercentage) * self.inputAmount / 100
         self.plusAmountLabel!.text = self.tipAmount.description
+        self.finalAmount = self.tipAmount + self.inputAmount
+        self.finalAmountLabel!.text = self.finalAmount.description
     }
     
     // MARK: Event handlers
@@ -118,7 +121,7 @@ class MainViewController: UIViewController, UITextFieldDelegate {
         let plusLabel = UILabel()
         let plusAmountLabel = UILabel()
         let equalsLabel = UILabel()
-        let resultsAmountLabel = UILabel()
+        let finalAmountLabel = UILabel()
         self.view.addSubview(view)
         
         
@@ -153,6 +156,24 @@ class MainViewController: UIViewController, UITextFieldDelegate {
             return
         }
         
+        view.addSubview(equalsLabel)
+        equalsLabel.text = "="
+        equalsLabel.font = UIFont(name: "Arial", size: 40)
+        equalsLabel.textColor = UIColor.whiteColor()
+        equalsLabel.snp_makeConstraints { (make) -> Void in
+            make.top.equalTo(plusAmountLabel).offset(60)
+            return
+        }
+        
+        view.addSubview(finalAmountLabel)
+        self.finalAmountLabel = finalAmountLabel
+        finalAmountLabel.font = UIFont(name: "Arial", size: 40)
+        finalAmountLabel.text = self.finalAmount.description
+        finalAmountLabel.snp_makeConstraints { (make) -> Void in
+            make.top.equalTo(plusAmountLabel).offset(60)
+            make.right.equalTo(self.view.snp_right)
+            return
+        }
     }
     
     override func didReceiveMemoryWarning() {
@@ -219,13 +240,14 @@ class MainViewController: UIViewController, UITextFieldDelegate {
     }
     
     func hideKeyboardOnTapOutside() {
-        let tapGesture = UITapGestureRecognizer(target: self, action: "dismissKeyboard")
-        self.view.addGestureRecognizer(tapGesture)
+//        Uncomment these lines to enable keyboard hiding on tap outside inputfield
+//        let tapGesture = UITapGestureRecognizer(target: self, action: "dismissKeyboard")
+//        self.view.addGestureRecognizer(tapGesture)
     }
     
-    func dismissKeyboard() {
-        self.inputField!.resignFirstResponder()
-    }
+//    func dismissKeyboard() {
+//        self.inputField!.resignFirstResponder()
+//    }
     
     
     
