@@ -14,9 +14,13 @@ class MainViewController: UIViewController, UITextFieldDelegate {
     // list of UI elements
     var inputField: UITextField?
     var tipAmountControl: UISegmentedControl?
+    var plusAmountLabel: UILabel?
     var navBarHeight: CGFloat?
     
+    var inputAmount = 0.0
     var tipAmount = 0.0
+    var finalAmount = 0.0
+    var tipPercentage = 10
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -47,7 +51,23 @@ class MainViewController: UIViewController, UITextFieldDelegate {
             name: UIKeyboardWillHideNotification,
             object: nil)
     }
-
+    
+    func updateValues() {
+        self.tipAmount = Double(self.tipPercentage) * self.inputAmount / 100
+        self.plusAmountLabel!.text = self.tipAmount.description
+    }
+    
+    // MARK: Event handlers
+    func tipPercentageChanged(segment: UISegmentedControl) {
+        if (segment == self.tipAmountControl!) {
+            let title = segment.titleForSegmentAtIndex(segment.selectedSegmentIndex)
+            let lastElementIdx = countElements(title!) - 1
+            let amt = (title! as NSString).substringToIndex(lastElementIdx)
+            self.tipPercentage = amt.toInt()!
+            self.updateValues()
+        }
+    }
+    
     // MARK: UI elements
     func makeTipPercentageSegmentControl() {
         let tipControl = UISegmentedControl(items: ["10%", "15%", "20%"])
@@ -59,6 +79,12 @@ class MainViewController: UIViewController, UITextFieldDelegate {
             make.centerX.equalTo(self.view.snp_centerX)
             return
         }
+        
+        tipControl.addTarget(self, action: "tipPercentageChanged:",
+            forControlEvents: UIControlEvents.ValueChanged)
+        
+        tipControl.selectedSegmentIndex = 0
+    
     }
     
     func makeInputField() {
@@ -118,6 +144,7 @@ class MainViewController: UIViewController, UITextFieldDelegate {
         
         
         view.addSubview(plusAmountLabel)
+        self.plusAmountLabel = plusAmountLabel
         plusAmountLabel.text = self.tipAmount.description
         plusAmountLabel.font = UIFont(name: "Arial", size: 40)
         plusAmountLabel.snp_makeConstraints { (make) -> Void in
@@ -149,12 +176,21 @@ class MainViewController: UIViewController, UITextFieldDelegate {
         
         if (first(newString) != "$") {
             newString = "$" + newString
-            
         }else if (first(newString) == "$" && countElements(newString) == 1) {
             // remove "$" sign if its the only char remaining
             newString = ""
         }
+        
+        
+        if (countElements(newString) == 0) {
+            self.inputAmount = 0.0
+        }else {
+            self.inputAmount = ((newString as NSString).substringFromIndex(1) as NSString).doubleValue
+        }
+        
         textField.text = newString
+        
+        self.updateValues()
         // Prevent changes. we would update the textfield manually
         return false
     }
