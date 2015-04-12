@@ -28,6 +28,14 @@ class MainViewController: UIViewController, UITextFieldDelegate {
         self.title = "Tip Calculator"
         self.navBarHeight = self.navigationController?.navigationBar.frame.height
         self.navigationController!.navigationBar.translucent = false
+        
+        self.navigationItem.rightBarButtonItem =
+            UIBarButtonItem(title: "Settings", style: UIBarButtonItemStyle.Plain,
+                target: self, action: "goToSettingsViewController")
+        
+        self.navigationItem.backBarButtonItem = UIBarButtonItem(title: "Back",
+            style: UIBarButtonItemStyle.Plain, target: nil, action: nil);
+        
         self.makeInputField()
         self.makeTipPercentageSegmentControl()
         self.makeResultsPane()
@@ -61,6 +69,12 @@ class MainViewController: UIViewController, UITextFieldDelegate {
     }
     
     // MARK: Event handlers
+    func goToSettingsViewController() {
+        let settingsViewController = SettingsViewController()
+        settingsViewController.view.backgroundColor = UIColor.whiteColor()
+        self.navigationController?.pushViewController(settingsViewController, animated: true)
+    }
+    
     func tipPercentageChanged(segment: UISegmentedControl) {
         if (segment == self.tipAmountControl!) {
             let title = segment.titleForSegmentAtIndex(segment.selectedSegmentIndex)
@@ -202,7 +216,7 @@ class MainViewController: UIViewController, UITextFieldDelegate {
             newString = ""
         }
         
-        
+        // updates inputAmount for calculations 
         if (countElements(newString) == 0) {
             self.inputAmount = 0.0
         }else {
