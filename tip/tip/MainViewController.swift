@@ -37,6 +37,7 @@ class MainViewController: UIViewController, UITextFieldDelegate {
         self.navigationItem.backBarButtonItem = UIBarButtonItem(title: "Back",
             style: UIBarButtonItemStyle.Plain, target: nil, action: nil);
         
+        self.registerAppActiveNotification()
         self.makeInputField()
         self.makeTipPercentageSegmentControl()
         self.makeResultsPane()
@@ -64,6 +65,13 @@ class MainViewController: UIViewController, UITextFieldDelegate {
             object: nil)
     }
     
+    func registerAppActiveNotification() {
+        NSNotificationCenter.defaultCenter().addObserver(self,
+                selector: "onApplicationWillResignActive",
+                name: UIApplicationWillResignActiveNotification,
+                object: nil)
+    }
+    
     func updateValues() {
         self.tipAmount = Double(self.tipPercentage) * self.inputAmount / 100
         self.plusAmountLabel!.text = self.tipAmount.description
@@ -87,6 +95,10 @@ class MainViewController: UIViewController, UITextFieldDelegate {
             self.updateTipPercentageValue()
             self.updateValues()
         }
+    }
+    
+    func onApplicationWillResignActive() {
+        self.userSettings.synchronize()
     }
     
     func updateTipAmountControlUI() {
@@ -117,11 +129,6 @@ class MainViewController: UIViewController, UITextFieldDelegate {
         
         tipControl.addTarget(self, action: "tipPercentageChanged:",
             forControlEvents: UIControlEvents.ValueChanged)
-        
-        let initialSelectedSegment = 0
-        self.userSettings.setInteger(initialSelectedSegment, forKey: "default_tip_segment_index")
-        self.userSettings.synchronize()
-        tipControl.selectedSegmentIndex = initialSelectedSegment
     }
     
     func makeInputField() {

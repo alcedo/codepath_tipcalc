@@ -27,7 +27,9 @@ class SettingsViewController: UIViewController {
                 forControlEvents: UIControlEvents.ValueChanged)
             
             tipControl.snp_makeConstraints{ (make) -> Void in
-                make.top.equalTo(self.view.snp_top).with.offset(10)
+                make.top.equalTo(self.view.snp_top).with.offset(40)
+                make.centerX.equalTo(self.view.snp_centerX)
+                make.width.equalTo(300)
                 return
             }
         }
