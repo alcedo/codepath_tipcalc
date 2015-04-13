@@ -18,6 +18,7 @@ class MainViewController: UIViewController, UITextFieldDelegate {
     var finalAmountLabel: UILabel?
     var navBarHeight: CGFloat?
     var userSettings = NSUserDefaults()
+    var inputPane = UIView()
     
     // TODO: group all of these into a data struct
     var inputAmount = 0.0
@@ -32,8 +33,19 @@ class MainViewController: UIViewController, UITextFieldDelegate {
         // TODO: make this work -> self.setupConstraint()
         // TODO: Google for flow controller, and shift all interaction code to that.
         // place all view creation logic here.
+        
+        self.view.addSubview(self.inputPane)
+        self.inputPane.snp_makeConstraints { (make) -> Void in
+            make.height.equalTo(700)
+            make.top.equalTo(self.view.snp_top)
+            
+            make.left.equalTo(self.view.snp_left)
+            make.right.equalTo(self.view.snp_right)
+            return
+        }
         self.makeInputField()
         self.makeTipPercentageSegmentControl()
+        
         self.makeResultsPane()
     }
     
@@ -163,7 +175,7 @@ class MainViewController: UIViewController, UITextFieldDelegate {
     func makeTipPercentageSegmentControl() {
         let tipControl = UISegmentedControl(items: ["10%", "15%", "20%"])
         self.tipAmountControl = tipControl
-        self.view.addSubview(tipControl)
+        self.inputPane.addSubview(tipControl)
         
         tipControl.snp_makeConstraints { (make) -> Void in
             make.top.equalTo(self.inputField!.snp_bottom)
@@ -181,7 +193,7 @@ class MainViewController: UIViewController, UITextFieldDelegate {
         // http://mycodetips.com/ios/create-uitextfield-programmatically-ios-856.html
         self.inputField = UITextField()
         if let inputField = self.inputField {
-            self.view.addSubview(inputField)
+            self.inputPane.addSubview(inputField)
             inputField.tag = 0  // used to identify our input field when its used in an delegate
             inputField.delegate = self
             inputField.keyboardType = UIKeyboardType.DecimalPad
@@ -213,7 +225,8 @@ class MainViewController: UIViewController, UITextFieldDelegate {
         
         view.backgroundColor = UIColor(red: 41/255, green: 128/255, blue: 185/255, alpha: 1.0)
         view.snp_makeConstraints { (make) -> Void in
-            make.top.equalTo(self.tipAmountControl!.snp_bottom).offset(10)
+//            make.top.equalTo(self.tipAmountControl!.snp_bottom).offset(10)
+            make.top.equalTo(self.inputPane.snp_bottom).offset(10)
             make.left.equalTo(self.view.snp_left)
             make.right.equalTo(self.view.snp_right)
             make.width.greaterThanOrEqualTo(self.view.bounds.width)
@@ -283,9 +296,25 @@ class MainViewController: UIViewController, UITextFieldDelegate {
         
         if (first(newString) != "$") {
             newString = "$" + newString
+            // show results pane, by making input pane smaller
+            self.inputPane.snp_updateConstraints({ (make) -> Void in
+                make.height.equalTo(130)
+                return
+            })
+            UIView.animateWithDuration(0.5, animations: {
+                self.view.layoutIfNeeded()
+            })
         }else if (first(newString) == "$" && countElements(newString) == 1) {
             // remove "$" sign if its the only char remaining
             newString = ""
+            // hide results pane, by making input pane larger
+            self.inputPane.snp_updateConstraints({ (make) -> Void in
+                make.height.equalTo(700)
+                return
+            })
+            UIView.animateWithDuration(0.5, animations: {
+                self.view.layoutIfNeeded()
+            })
         }
         
         textField.text = newString
