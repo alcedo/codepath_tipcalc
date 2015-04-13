@@ -16,4 +16,4 @@ Completed:
 * Additional: Autolayouts
 * Additional: No storyboard, no interface builder. Pure programatical goodness 
 
-![Video Walkthrough](http://cl.ly/image/2X3V3l2j143q/walkthrough.gif)
+![Video Walkthrough](http://cl.ly/image/3Q2n0E3S0n2A)
