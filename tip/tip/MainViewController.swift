@@ -19,16 +19,31 @@ class MainViewController: UIViewController, UITextFieldDelegate {
     var navBarHeight: CGFloat?
     var userSettings = NSUserDefaults()
     
+    // TODO: group all of these into a data struct
     var inputAmount = 0.0
     var tipAmount = 0.0
     var finalAmount = 0.0
     var tipPercentage = 10
-
+    
+    // TODO: For view controller, override loadView() to create new UIs and setting up of constraint
+    // for UIView() override initWithFrame method to add subviews and creation of constraint
+    override func loadView() {
+        self.view = UIView()
+        // TODO: make this work -> self.setupConstraint()
+        // TODO: Google for flow controller, and shift all interaction code to that.
+        // place all view creation logic here.
+        self.makeInputField()
+        self.makeTipPercentageSegmentControl()
+        self.makeResultsPane()
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         self.title = "Tip Calculator"
         self.navBarHeight = self.navigationController?.navigationBar.frame.height
         self.navigationController!.navigationBar.translucent = false
+        
+        self.view.backgroundColor = UIColor.whiteColor()
         
         self.navigationItem.rightBarButtonItem =
             UIBarButtonItem(title: "Settings", style: UIBarButtonItemStyle.Plain,
@@ -37,27 +52,14 @@ class MainViewController: UIViewController, UITextFieldDelegate {
         self.navigationItem.backBarButtonItem = UIBarButtonItem(title: "Back",
             style: UIBarButtonItemStyle.Plain, target: nil, action: nil);
         
-        self.registerAppActiveNotification()
-        self.makeInputField()
-        self.makeTipPercentageSegmentControl()
-        self.makeResultsPane()
+        // keyboard notifs
         self.hideKeyboardOnTapOutside()
         self.registerForKeyboardNotifications()
+        
+        self.registerAppActiveNotification()
     }
     
-    // viewWillAppear gets called every time the view appears.
-    override func viewWillAppear(animated: Bool) {
-        // focus on the text field to make sure the keyboard shows
-        self.inputField?.becomeFirstResponder()
-        self.maybeResetCacheValue()
-        self.updateTipAmountControlUI()
-        self.updateTipPercentageValue()
-        self.updateInputField()
-        self.updateValues()
-        super.viewWillAppear(animated)
-    }
-    
-    override func viewWillDisappear(animated: Bool) {
+    deinit {
         NSNotificationCenter.defaultCenter().removeObserver(self,
             name: UIKeyboardDidShowNotification,
             object: nil)
@@ -65,6 +67,21 @@ class MainViewController: UIViewController, UITextFieldDelegate {
         NSNotificationCenter.defaultCenter().removeObserver(self,
             name: UIKeyboardWillHideNotification,
             object: nil)
+    }
+    
+    // viewWillAppear gets called every time the view appears.
+    // Todo: consider shifting all of the below stuff to viewDidLoad()
+    override func viewWillAppear(animated: Bool) {
+        // focus on the text field to make sure the keyboard shows
+        self.inputField?.becomeFirstResponder()
+        // Calculation stuffs
+        self.maybeResetCacheValue()
+        self.updateTipAmountControlUI()
+        self.updateTipPercentageValue()
+        self.updateInputField()
+        self.updateValues()
+        
+        super.viewWillAppear(animated)
     }
     
     func registerAppActiveNotification() {
