@@ -49,6 +49,7 @@ class MainViewController: UIViewController, UITextFieldDelegate {
     override func viewWillAppear(animated: Bool) {
         // focus on the text field to make sure the keyboard shows
         self.inputField?.becomeFirstResponder()
+        self.maybeResetCacheValue()
         self.updateTipAmountControlUI()
         self.updateTipPercentageValue()
         self.updateInputField()
@@ -71,6 +72,19 @@ class MainViewController: UIViewController, UITextFieldDelegate {
                 selector: "onApplicationWillResignActive",
                 name: UIApplicationWillResignActiveNotification,
                 object: nil)
+    }
+    
+    func maybeResetCacheValue() {
+        if let date: AnyObject = self.userSettings.objectForKey("last_app_resign_date") {
+            let lastDate = date as NSDate
+            let now = NSDate()
+            let interval = now.timeIntervalSinceDate(lastDate)
+            // if elapsed time is more than 10 mins (60 seconds), reset cache
+            if (interval > 600) {
+                let id = NSBundle.mainBundle().bundleIdentifier
+                NSUserDefaults.standardUserDefaults().removePersistentDomainForName(id!)
+            }
+        }
     }
     
     func updateValues() {
@@ -99,16 +113,19 @@ class MainViewController: UIViewController, UITextFieldDelegate {
     }
     
     func onApplicationWillResignActive() {
+        self.userSettings.setObject(NSDate(), forKey: "last_app_resign_date")
         self.userSettings.synchronize()
     }
     
     func updateInputField() {
-        let amt = self.userSettings.valueForKey("input_amount") as NSString
-        self.inputField!.text = amt
-        if (amt.length == 0) {
-            self.inputAmount = 0
-        }else {
-            self.inputAmount = ((amt as NSString).substringFromIndex(1) as NSString).doubleValue
+        if let inputAmount: AnyObject = self.userSettings.valueForKey("input_amount") {
+            let amt = inputAmount as NSString
+            self.inputField!.text = amt
+            if (amt.length == 0) {
+                self.inputAmount = 0
+            }else {
+                self.inputAmount = ((amt as NSString).substringFromIndex(1) as NSString).doubleValue
+            }
         }
     }
     
