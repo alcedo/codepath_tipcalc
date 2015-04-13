@@ -51,6 +51,7 @@ class MainViewController: UIViewController, UITextFieldDelegate {
         self.inputField?.becomeFirstResponder()
         self.updateTipAmountControlUI()
         self.updateTipPercentageValue()
+        self.updateInputField()
         self.updateValues()
         super.viewWillAppear(animated)
     }
@@ -99,6 +100,16 @@ class MainViewController: UIViewController, UITextFieldDelegate {
     
     func onApplicationWillResignActive() {
         self.userSettings.synchronize()
+    }
+    
+    func updateInputField() {
+        let amt = self.userSettings.valueForKey("input_amount") as NSString
+        self.inputField!.text = amt
+        if (amt.length == 0) {
+            self.inputAmount = 0
+        }else {
+            self.inputAmount = ((amt as NSString).substringFromIndex(1) as NSString).doubleValue
+        }
     }
     
     func updateTipAmountControlUI() {
@@ -243,15 +254,9 @@ class MainViewController: UIViewController, UITextFieldDelegate {
             newString = ""
         }
         
-        // updates inputAmount for calculations 
-        if (countElements(newString) == 0) {
-            self.inputAmount = 0.0
-        }else {
-            self.inputAmount = ((newString as NSString).substringFromIndex(1) as NSString).doubleValue
-        }
-        
         textField.text = newString
-        
+        self.userSettings.setValue(textField.text, forKey: "input_amount")
+        self.updateInputField()
         self.updateValues()
         // Prevent changes. we would update the textfield manually
         return false
