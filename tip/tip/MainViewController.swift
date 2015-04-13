@@ -17,6 +17,7 @@ class MainViewController: UIViewController, UITextFieldDelegate {
     var plusAmountLabel: UILabel?
     var finalAmountLabel: UILabel?
     var navBarHeight: CGFloat?
+    var userSettings = NSUserDefaults()
     
     var inputAmount = 0.0
     var tipAmount = 0.0
@@ -47,7 +48,9 @@ class MainViewController: UIViewController, UITextFieldDelegate {
     override func viewWillAppear(animated: Bool) {
         // focus on the text field to make sure the keyboard shows
         self.inputField?.becomeFirstResponder()
-        
+        self.updateTipAmountControlUI()
+        self.updateTipPercentageValue()
+        self.updateValues()
         super.viewWillAppear(animated)
     }
     
@@ -77,12 +80,26 @@ class MainViewController: UIViewController, UITextFieldDelegate {
     
     func tipPercentageChanged(segment: UISegmentedControl) {
         if (segment == self.tipAmountControl!) {
-            let title = segment.titleForSegmentAtIndex(segment.selectedSegmentIndex)
-            let lastElementIdx = countElements(title!) - 1
-            let amt = (title! as NSString).substringToIndex(lastElementIdx)
-            self.tipPercentage = amt.toInt()!
+            // update cache
+            self.userSettings.setInteger(segment.selectedSegmentIndex, forKey: "default_tip_segment_index")
+            self.userSettings.synchronize()
+            self.updateTipAmountControlUI()
+            self.updateTipPercentageValue()
             self.updateValues()
         }
+    }
+    
+    func updateTipAmountControlUI() {
+        let segmentIdx = self.userSettings.integerForKey("default_tip_segment_index")
+        self.tipAmountControl!.selectedSegmentIndex = segmentIdx
+    }
+    
+    func updateTipPercentageValue() {
+        let segmentIdx = self.userSettings.integerForKey("default_tip_segment_index")
+        let title = self.tipAmountControl!.titleForSegmentAtIndex(segmentIdx)
+        let lastElementIdx = countElements(title!) - 1
+        let amt = (title! as NSString).substringToIndex(lastElementIdx)
+        self.tipPercentage = amt.toInt()!
     }
     
     // MARK: UI elements
@@ -94,14 +111,17 @@ class MainViewController: UIViewController, UITextFieldDelegate {
         tipControl.snp_makeConstraints { (make) -> Void in
             make.top.equalTo(self.inputField!.snp_bottom)
             make.centerX.equalTo(self.view.snp_centerX)
+            make.width.equalTo(300)
             return
         }
         
         tipControl.addTarget(self, action: "tipPercentageChanged:",
             forControlEvents: UIControlEvents.ValueChanged)
         
-        tipControl.selectedSegmentIndex = 0
-    
+        let initialSelectedSegment = 0
+        self.userSettings.setInteger(initialSelectedSegment, forKey: "default_tip_segment_index")
+        self.userSettings.synchronize()
+        tipControl.selectedSegmentIndex = initialSelectedSegment
     }
     
     func makeInputField() {

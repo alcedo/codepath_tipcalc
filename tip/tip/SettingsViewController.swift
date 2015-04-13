@@ -7,14 +7,30 @@
 //
 
 import UIKit
+import Snap
 
 class SettingsViewController: UIViewController {
+    var userSettings = NSUserDefaults()
+    var tipAmountControl: UISegmentedControl?
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        self.title = "Set Default Tip Percentage"
         
-
-        // Do any additional setup after loading the view.
+        // Initialize the view with the current default tip percentage
+        var defaultTipSegmentIdx = self.userSettings.integerForKey("default_tip_segment_index")
+        self.tipAmountControl = UISegmentedControl(items: ["10%", "15%", "20%"])
+        if let tipControl = self.tipAmountControl {
+            self.view.addSubview(tipControl)
+            tipControl.selectedSegmentIndex = defaultTipSegmentIdx
+            tipControl.addTarget(self, action: "tipPercentageChanged:",
+                forControlEvents: UIControlEvents.ValueChanged)
+            
+            tipControl.snp_makeConstraints{ (make) -> Void in
+                make.top.equalTo(self.view.snp_top).with.offset(10)
+                return
+            }
+        }
     }
 
     override func didReceiveMemoryWarning() {
@@ -22,7 +38,23 @@ class SettingsViewController: UIViewController {
         // Dispose of any resources that can be recreated.
     }
     
-
+    func tipPercentageChanged(segment: UISegmentedControl) {
+        if let segment = self.tipAmountControl {
+            self.updateDefaultTip()
+        }
+    }
+    
+    override func viewWillDisappear(animated: Bool) {
+        self.updateDefaultTip()
+        super.viewWillDisappear(animated)
+    }
+    
+    func updateDefaultTip() {
+        self.userSettings.setInteger(self.tipAmountControl!.selectedSegmentIndex,
+            forKey: "default_tip_segment_index")
+        self.userSettings.synchronize()
+    }
+    
     /*
     // MARK: - Navigation
 
