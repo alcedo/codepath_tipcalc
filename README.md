@@ -16,4 +16,5 @@ Completed:
 * Additional: Autolayouts
 * Additional: No storyboard, no interface builder. Pure programatical goodness 
 
+Walk through recorded using: licecap
 ![Video Walkthrough](http://cl.ly/image/3Q2n0E3S0n2A/walkthrough.gif)
